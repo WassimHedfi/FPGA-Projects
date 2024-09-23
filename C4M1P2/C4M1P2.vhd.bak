@@ -1,0 +1,51 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity C4M1P2 is
+    Port ( SW : in STD_LOGIC_VECTOR (3 downto 0);  -- Input V (SW3-0)
+           HEX1 : out STD_LOGIC_VECTOR (6 downto 0); -- Output for d1 (7-segment)
+           HEX0 : out STD_LOGIC_VECTOR (6 downto 0)); -- Output for d0 (7-segment)
+end C4M1P2;
+
+architecture Behavioral of C4M1P2 is
+
+    signal A : STD_LOGIC_VECTOR (3 downto 0); -- Output A from circuit A
+    signal Z : STD_LOGIC; -- Comparator output (Z = 1 if V > 9)
+    signal V : STD_LOGIC_VECTOR (3 downto 0); -- Input value V
+
+begin
+
+    -- Assign input V to SW
+    V <= SW;
+
+    -- Comparator logic (Z = 1 if V > 9)
+    Z <= '1' when V > "1001" else '0';
+
+    -- Logic for Circuit A (Binary to Decimal Conversion for V > 9)
+    A(3) <= '0'; -- A3 is always 0
+    A(2) <= V(3) and not V(2);
+    A(1) <= V(2) xor V(1);
+    A(0) <= V(1) xor V(0);
+
+    -- Multiplexer: select between V or A based on Z
+    HEX0 <= V when Z = '0' else A;
+
+    -- Hex to 7-segment decoder for d1 (for V's most significant digit)
+    HEX1(0) <= (V(3) or V(2)) and not V(1) and not V(0);  -- Segment a
+    HEX1(1) <= not V(3) and V(2) and (not V(1) or not V(0)); -- Segment b
+    HEX1(2) <= not V(3) and not V(2) and V(1);            -- Segment c
+    HEX1(3) <= (V(2) or V(1)) and not V(3) and not (V(1) xor V(0)); -- Segment d
+    HEX1(4) <= V(1) or not (V(3) or V(2) or V(0));        -- Segment e
+    HEX1(5) <= V(0) or (V(3) or not V(2) or not V(1));    -- Segment f
+    HEX1(6) <= not V(3) and not V(2) and V(1) and not V(0); -- Segment g
+
+    -- Hex to 7-segment decoder for d0 (to display the selected value)
+    HEX0(0) <= (HEX0(3) or HEX0(2)) and not HEX0(1) and not HEX0(0);  -- Segment a
+    HEX0(1) <= not HEX0(3) and HEX0(2) and (not HEX0(1) or not HEX0(0)); -- Segment b
+    HEX0(2) <= not HEX0(3) and not HEX0(2) and HEX0(1);            -- Segment c
+    HEX0(3) <= (HEX0(2) or HEX0(1)) and not HEX0(3) and not (HEX0(1) xor HEX0(0)); -- Segment d
+    HEX0(4) <= HEX0(1) or not (HEX0(3) or HEX0(2) or HEX0(0));        -- Segment e
+    HEX0(5) <= HEX0(0) or (HEX0(3) or not HEX0(2) or not HEX0(1));    -- Segment f
+    HEX0(6) <= not HEX0(3) and not HEX0(2) and HEX0(1) and not HEX0(0); -- Segment g
+
+end Behavioral;

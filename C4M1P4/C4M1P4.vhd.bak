@@ -1,0 +1,37 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity C4M1P4 is
+    Port (
+        x       : in  STD_LOGIC_VECTOR(3 downto 0); -- 4-bit input a
+        y       : in  STD_LOGIC_VECTOR(3 downto 0); -- 4-bit input b
+        cin      : in  STD_LOGIC; -- Carry-in
+        s     : out STD_LOGIC_VECTOR(3 downto 0); -- 4-bit sum output
+        cout : out STD_LOGIC -- Final carry-out
+    );
+end C4M1P4;
+
+architecture Behavioral of C4M1P4 is
+    signal carry : STD_LOGIC_VECTOR(3 downto 0); -- Internal carry signals
+
+    -- Instantiate 4 full adders
+    component four_bit_adder
+        Port (
+            a   : in  STD_LOGIC;
+            b   : in  STD_LOGIC;
+            cin  : in  STD_LOGIC;
+            s   : out STD_LOGIC;
+            cout  : out STD_LOGIC
+        );
+    end component;
+    
+begin
+    -- Instantiate full adders and connect them
+	a <= x;
+	b <= y;
+	cin <= cin;
+	s <= s;
+	cout <= cout;
+	
+    
+end Behavioral;
